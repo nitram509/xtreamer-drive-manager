@@ -8,6 +8,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -160,6 +162,16 @@ public class ManageDrives {
 				refreshTableDetails(mf);
 				btn_Imdb.setEnabled(true);
 				btn_Imdb.setData(mf);
+			}
+		});
+		tab_folders.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				Table ta = (Table) e.widget;
+				if (ta.getSelection().length > 0) {
+					MovieFolder mf = (MovieFolder) ta.getSelection()[0].getData();
+					txt_chooseFolder.setText(new File(mf.getParent().getBasePath(), mf.getPathname()).toString());
+				}
 			}
 		});
 		tab_folders.setHeaderVisible(true);
