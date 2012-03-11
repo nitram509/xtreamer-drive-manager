@@ -3,8 +3,10 @@ package de.bitkings;
 import java.awt.Desktop;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -405,6 +407,17 @@ public class ImdbFetcherDialog extends Dialog {
 		txt_ResultSearchMovie.setText("Running script ...\n");
 		System.setProperty(PySystemState.PYTHON_CACHEDIR, new File(System.getProperty("java.io.tmpdir"), "jythoncachedir").toString());
 		PythonInterpreter interp = new PythonInterpreter();
+		File outf, errf;
+		try {
+			outf = File.createTempFile("search_imdb_py_LOG_OUT", ".txt");
+			errf = File.createTempFile("search_imdb_py_LOG_ERR", ".txt");
+			interp.setOut(new BufferedOutputStream(new FileOutputStream(outf)));
+			interp.setErr(new BufferedOutputStream(new FileOutputStream(errf)));
+		} catch (Exception exc) {
+			exc.printStackTrace();
+			txt_ResultSearchMovie.setText(exc.getMessage());
+			return;
+		}
 		interp.exec("import sys");
 		interp.exec("sys.argv = [sys.argv[0], "+PyString.encode_UnicodeEscape(moviename, true)+"]");
 		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("search_movie.py")) {
@@ -414,7 +427,9 @@ public class ImdbFetcherDialog extends Dialog {
 			PyObject pyobj = interp.get("results");
 			int len = pyobj.__len__();
 			if (len == 0) {
-				txt_ResultSearchMovie.append("Nothing found or error happend :-/" + NL);
+				txt_ResultSearchMovie.append("Nothing found or error happend :-/" + NL + NL);
+				txt_ResultSearchMovie.append("Output log file " + outf + NL);
+				txt_ResultSearchMovie.append("Error log file " + errf + NL);
 			} else {
 				txt_ResultSearchMovie.setText("");
 				for (int i=0; i<len; i++) {
