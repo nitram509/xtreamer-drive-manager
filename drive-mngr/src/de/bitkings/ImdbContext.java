@@ -16,6 +16,8 @@ import de.bitkings.model.ImdbMovieInfo;
 
 public class ImdbContext {
 	
+	private static final String NL = System.getProperty("line.separator");
+	
 	private PythonInterpreter interpreter;
 
 	/**
@@ -29,7 +31,16 @@ public class ImdbContext {
 		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("get_movie.py")) {
 			interpreter.execfile(is);
 			PyObject movieobj = interpreter.get("movie");
-			return movieobj.__getattr__("summary").__call__().toString();
+			interpreter.exec("imdbid = i.get_imdbURL(movie)");
+			PyObject imdbURL = interpreter.get("imdbid");
+			PyObject coverurl = movieobj.__findattr__("get").__call__(new PyString("cover url"));
+			PyObject fullsizecoverurl = movieobj.__findattr__("get").__call__(new PyString("full-size cover url"));
+			String s = "";
+			s += "IMDb URL: " +imdbURL.toString() + NL;
+			s += "Cover URL: " + coverurl.toString() + NL;
+			s += "Full size cover URL: " + fullsizecoverurl.toString() + NL ;
+			String summary = movieobj.__getattr__("summary").__call__().toString();
+			return s +summary;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
