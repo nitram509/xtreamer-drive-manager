@@ -3,7 +3,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="src" path="tests"/>
+	<classpathentry kind="src" path="src-imdb-4.7"/>
+	<classpathentry kind="src" path="src-jython-2.5.2"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="lib" path="lib/jython.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
