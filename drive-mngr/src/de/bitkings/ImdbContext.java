@@ -18,6 +18,10 @@ public class ImdbContext {
 	
 	private PythonInterpreter interpreter;
 
+	/**
+	 * @param id
+	 * @return
+	 */
 	public String getMovieById(String id) {
 		interpreter = getPythonInterpreter();
 		interpreter.exec("import sys");
@@ -32,6 +36,10 @@ public class ImdbContext {
 		}
 	}
 	
+	/**
+	 * @param moviename
+	 * @return
+	 */
 	public List<ImdbMovieInfo> searchMovie(String moviename) {
 		interpreter = getPythonInterpreter();
 		
