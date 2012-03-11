@@ -33,12 +33,18 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.python.core.PyObject;
+import org.python.core.PyString;
+import org.python.core.PySystemState;
+import org.python.util.PythonInterpreter;
 
 import de.bitkings.model.MovieFolder;
 import de.bitkings.utils.FileUtils;
 
 public class ImdbFetcherDialog extends Dialog {
 
+	private static final String NL = System.getProperty("line.separator");
+	
 	private static final String PREF_SEARCHMOVIE_PATHNAME = "python.search.movie.name";
 	private static final String PREF_GETMOVIE_PATHNAME = "python.get.movie.name";
 	
@@ -69,7 +75,6 @@ public class ImdbFetcherDialog extends Dialog {
 	private Button btn_saveCover;
 	private Button btn_openImdbURL;
 	private Button cbo_saveInfo;
-	private Label label_1;
 
 
 	/**
@@ -161,24 +166,16 @@ public class ImdbFetcherDialog extends Dialog {
 		
 		Label lblPyimdbPath = new Label(shell, SWT.NONE);
 		lblPyimdbPath.setText("PyIMDB Path:");
+		lblPyimdbPath.setEnabled(false); // not needed anymore
 		
 		txt_PySearchMovie = new Text(shell, SWT.BORDER);
 		txt_PySearchMovie.setTextLimit(255);
-		txt_PySearchMovie.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				validatePySearchMovieFileName();
-			}
-		});
 		txt_PySearchMovie.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txt_PySearchMovie.setEnabled(false); // not needed anymore
 		
 		btn_ChooseFile = new Button(shell, SWT.NONE);
-		btn_ChooseFile.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				actionChooseSearchMovieScript();
-			}
-		});
 		btn_ChooseFile.setImage(SWTResourceManager.getImage(ImdbFetcherDialog.class, "/folder_explore.png"));
+		btn_ChooseFile.setEnabled(false); // not needed anymore
 		
 		btn_RunSearchScript = new Button(shell, SWT.NONE);
 		btn_RunSearchScript.addSelectionListener(new SelectionAdapter() {
@@ -311,7 +308,7 @@ public class ImdbFetcherDialog extends Dialog {
 		btn_saveCover.setText("Cover");
 		btn_saveCover.setImage(SWTResourceManager.getImage(ImdbFetcherDialog.class, "/disk.png"));
 		
-		label_1 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		
 		cbo_saveInfo = new Button(composite, SWT.CHECK);
 		cbo_saveInfo.setSelection(true);
@@ -401,51 +398,39 @@ public class ImdbFetcherDialog extends Dialog {
 		}
 	}
 	
-	private void actionChooseSearchMovieScript() {
-		FileDialog dialog = new FileDialog(shell);
-		dialog.setFileName("search_movie.py");
-		String fname = dialog.open();
-		if (fname != null) {
-			preferences.put(PREF_SEARCHMOVIE_PATHNAME, fname);
-			txt_PySearchMovie.setText(fname);
-		}
-	}
-	
 	/**
 	 * @param moviename
 	 */
 	private void actionRunSearchMovieScript(String moviename) {
 		txt_ResultSearchMovie.setText("Running script ...\n");
-		StringBuilder sb = new StringBuilder();
-		try {
-			File pyf = new File(txt_PySearchMovie.getText());
-			ArrayList<String> cmds = new ArrayList<String>();
-			cmds.add(FileUtils.findPythonRuntime());
-			cmds.add(pyf.getAbsolutePath());
-			cmds.add(moviename);
-			ProcessBuilder pb = new ProcessBuilder();
-			pb.command(cmds);
-			pb.directory(pyf.getParentFile());
-			Process process = pb.start();
-			
-			InputStream is = process.getInputStream();
-			byte[] buf = new byte[1024];
-			int read;
-			while ( (read = is.read(buf)) >=0){
-				sb.append(new String(buf, 0, read, charset));
-			};
-			is.close();
-			
-			// error reporting
-			is = process.getErrorStream();
-			while ( (read = is.read(buf)) >=0){
-				System.err.println(new String(buf, 0, read, charset));
-			};
-			is.close();
+		System.setProperty(PySystemState.PYTHON_CACHEDIR, new File(System.getProperty("java.io.tmpdir"), "jythoncachedir").toString());
+		PythonInterpreter interp = new PythonInterpreter();
+		interp.exec("import sys");
+		interp.exec("sys.argv = [sys.argv[0], "+PyString.encode_UnicodeEscape(moviename, true)+"]");
+		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("search_movie.py")) {
+			interp.execfile(is);
+
+			// after running, extract information from 'results' variable
+			PyObject pyobj = interp.get("results");
+			int len = pyobj.__len__();
+			if (len == 0) {
+				txt_ResultSearchMovie.append("Nothing found or error happend :-/" + NL);
+			} else {
+				txt_ResultSearchMovie.setText("");
+				for (int i=0; i<len; i++) {
+					PyObject movieobj = pyobj.__getitem__(i);
+					interp.set("movie", movieobj);
+					interp.exec("imdbid = i.get_imdbID(movie)");
+					PyObject imdbid = interp.get("imdbid");
+					PyObject movie_data = movieobj.__getattr__("data");
+					String movtitle = movie_data.__finditem__("title").toString();
+					String movyear = movie_data.__finditem__("year").toString();
+					txt_ResultSearchMovie.append(imdbid.toString() + " : " + movtitle + " \t(" + movyear + ")" + NL);
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		txt_ResultSearchMovie.append(sb.toString());
 		txt_ResultSearchMovie.setSelection(0,0);
 	}
 	
