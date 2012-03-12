@@ -27,6 +27,7 @@
 package jython;
 
 import de.bitkings.ImdbContext;
+import de.bitkings.MovieDatabaseSearchProvider;
 
 public class TestImdbGetMovie {
 
@@ -34,7 +35,7 @@ public class TestImdbGetMovie {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ImdbContext imdb = new ImdbContext();
+		MovieDatabaseSearchProvider imdb = new ImdbContext();
 		imdb.getMovieById("1480660");
 	}
 

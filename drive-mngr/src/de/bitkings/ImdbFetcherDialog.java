@@ -35,7 +35,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.prefs.Preferences;
 
 import org.eclipse.swt.SWT;
@@ -64,19 +66,17 @@ import de.bitkings.model.MovieFolder;
 public class ImdbFetcherDialog extends Dialog {
 
 	private static final String NL = System.getProperty("line.separator");
-	
+
 	private static final String PREFIX_IMDB_URL = "IMDb URL:";
 	private static final String PREFIX_COVER_URL = "Cover URL:";
 	private static final String PREFIX_FULL_COVER_URL = "Full size cover URL:";
-	
+
 	private final Preferences preferences = Preferences.userNodeForPackage(this.getClass());
-	
-	private final ImdbContext imdb = new ImdbContext();
-	
+
 	protected Object result;
 	private MovieFolder model;
 	private String query;
-	
+
 	protected Shell shell;
 	private Text txt_ResultSearchMovie;
 	private Button btn_RunSearchScript;
@@ -100,7 +100,7 @@ public class ImdbFetcherDialog extends Dialog {
 		super(parent, style);
 		setText("Run IMDB Scripts");
 	}
-	
+
 	public void setModel(MovieFolder model) {
 		this.model = model;
 		String q = model.getPathname();
@@ -142,17 +142,17 @@ public class ImdbFetcherDialog extends Dialog {
 	}
 
 	private void loadPreferences() {
-		
+
 		if (query != null) txt_ParmMovie.setText(query);
-		
+
 		txt_ParmMovie.setFocus();
 		int len = txt_ParmMovie.getText().length();
 		txt_ParmMovie.setSelection(len, len);
-		
+
 		validatePyGetMovieFileName();
 		validatePySearchMovieFileName();
 	}
-	
+
 	private void savePreferences() {
 		try {
 			preferences.flush();
@@ -175,10 +175,10 @@ public class ImdbFetcherDialog extends Dialog {
 		gl_shell.marginTop = 5;
 		gl_shell.marginHeight = 0;
 		shell.setLayout(gl_shell);
-		
+
 		Label lblParmMovie = new Label(shell, SWT.NONE);
 		lblParmMovie.setText("Movie name:");
-		
+
 		txt_ParmMovie = new Text(shell, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH);
 		txt_ParmMovie.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -190,12 +190,13 @@ public class ImdbFetcherDialog extends Dialog {
 		});
 		txt_ParmMovie.setTextLimit(255);
 		txt_ParmMovie.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				validatePySearchMovieFileName();
 			}
 		});
 		txt_ParmMovie.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		
+
 		btn_RunSearchScript = new Button(shell, SWT.NONE);
 		btn_RunSearchScript.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -217,15 +218,15 @@ public class ImdbFetcherDialog extends Dialog {
 		GridData gd_txt_ResultSearchMovie = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
 		gd_txt_ResultSearchMovie.heightHint = 100;
 		txt_ResultSearchMovie.setLayoutData(gd_txt_ResultSearchMovie);
-		
+
 		Label label = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
 		GridData gd_label = new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1);
 		gd_label.heightHint = 3;
 		label.setLayoutData(gd_label);
-		
+
 		Label lblParmId = new Label(shell, SWT.NONE);
 		lblParmId.setText("IMDB ID:");
-		
+
 		txt_ParmId = new Text(shell, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH);
 		txt_ParmId.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -234,12 +235,13 @@ public class ImdbFetcherDialog extends Dialog {
 			}
 		});
 		txt_ParmId.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				validatePyGetMovieFileName();
 			}
 		});
 		txt_ParmId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		
+
 		btn_RunGetMovieScript = new Button(shell, SWT.NONE);
 		btn_RunGetMovieScript.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -249,9 +251,10 @@ public class ImdbFetcherDialog extends Dialog {
 		});
 		btn_RunGetMovieScript.setText("Retrieve");
 		btn_RunGetMovieScript.setImage(SWTResourceManager.getImage(ImdbFetcherDialog.class, "/application_go.png"));
-		
+
 		txt_ResultGetMovie = new Text(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
 		txt_ResultGetMovie.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				validateResultMovieDetails();
 			}
@@ -259,13 +262,13 @@ public class ImdbFetcherDialog extends Dialog {
 		GridData gd_txt_ResultGetMovie = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
 		gd_txt_ResultGetMovie.heightHint = 100;
 		txt_ResultGetMovie.setLayoutData(gd_txt_ResultGetMovie);
-		
+
 		composite = new Composite(shell, SWT.NONE);
 		RowLayout rl_composite = new RowLayout(SWT.VERTICAL);
 		rl_composite.fill = true;
 		composite.setLayout(rl_composite);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		
+
 		btn_openImdbURL = new Button(composite, SWT.NONE);
 		btn_openImdbURL.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -276,7 +279,7 @@ public class ImdbFetcherDialog extends Dialog {
 		btn_openImdbURL.setImage(SWTResourceManager.getImage(this.getClass(), "/world.png"));
 		btn_openImdbURL.setText("Browse");
 		btn_openImdbURL.setEnabled(false);
-		
+
 		btn_saveCover = new Button(composite, SWT.NONE);
 		btn_saveCover.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -288,13 +291,13 @@ public class ImdbFetcherDialog extends Dialog {
 		btn_saveCover.setAlignment(SWT.LEFT);
 		btn_saveCover.setText("Cover");
 		btn_saveCover.setImage(SWTResourceManager.getImage(ImdbFetcherDialog.class, "/disk.png"));
-		
+
 		new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		
+
 		cbo_saveInfo = new Button(composite, SWT.CHECK);
 		cbo_saveInfo.setSelection(true);
 		cbo_saveInfo.setText("Save .nfo?");
-		
+
 		btn_saveFullCover = new Button(composite, SWT.NONE);
 		btn_saveFullCover.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -309,7 +312,7 @@ public class ImdbFetcherDialog extends Dialog {
 		btn_saveFullCover.setText("Big Cover");
 		btn_saveFullCover.setImage(SWTResourceManager.getImage(ImdbFetcherDialog.class, "/disk.png"));
 	}
-	
+
 	/**
 	 * @return TRUE if ok FALSE otherwise -> also enables/disables the buttons
 	 */
@@ -319,7 +322,7 @@ public class ImdbFetcherDialog extends Dialog {
 		btn_RunSearchScript.setEnabled(isok);
 		return isok;
 	}
-	
+
 	/**
 	 * @return TRUE if ok FALSE otherwise -> also enables/disables the buttons
 	 */
@@ -329,7 +332,7 @@ public class ImdbFetcherDialog extends Dialog {
 		btn_RunGetMovieScript.setEnabled(isok);
 		return isok;
 	}
-	
+
 	private void validateResultMovieDetails() {
 		btn_saveCover.setEnabled(false);
 		btn_saveFullCover.setEnabled(false);
@@ -362,29 +365,36 @@ public class ImdbFetcherDialog extends Dialog {
 			}
 		}
 	}
-	
+
 	/**
 	 * @param moviename
 	 */
 	private void actionRunSearchMovieScript(String moviename) {
 		txt_ResultSearchMovie.setText("Running script ...\n");
-		List<ImdbMovieInfo> movies = imdb.searchMovie(moviename);
+		List<ImdbMovieInfo> movies = null;
+		ServiceLoader<MovieDatabaseSearchProvider> sl = ServiceLoader.load(MovieDatabaseSearchProvider.class);
+		for (Iterator<MovieDatabaseSearchProvider> it = sl.iterator(); it.hasNext();) {
+			MovieDatabaseSearchProvider provider = it.next();
+			movies = provider.searchMovie(moviename);
+		}
+
+//		List<ImdbMovieInfo> movies = imdb.searchMovie(moviename);
 		txt_ResultSearchMovie.setText("");
-		for (ImdbMovieInfo movie : movies) {
+		for (ImdbMovieInfo movie : movies) { // FIXME:  NPE !!!
 			txt_ResultSearchMovie.append(movie.id + " : " + movie.title + " \t(" + movie.year + ")" + NL);
 		}
 		txt_ResultSearchMovie.setSelection(0,0);
 	}
-	
+
 	/**
 	 * @param movieId
 	 */
 	private void actionRunGetMovieScript(String movieId) {
 		txt_ResultGetMovie.setText("Running script ...\n");
-		txt_ResultGetMovie.setText(imdb.getMovieById(movieId));		
+//		txt_ResultGetMovie.setText(imdb.getMovieById(movieId));
 		txt_ResultGetMovie.setSelection(0,0);
 	}
-	
+
 	/**
 	 * @param file
 	 * @see {@link Desktop#open(File)}
@@ -397,7 +407,7 @@ public class ImdbFetcherDialog extends Dialog {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * @param urlstr
 	 */
@@ -406,7 +416,7 @@ public class ImdbFetcherDialog extends Dialog {
 			URL url = new URL(urlstr);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			InputStream is = con.getInputStream();
-			
+
 			File file = new File(new File(model.getParent().getBasePath(), model.getPathname()), model.getPathname() + ".jpg");
 			BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(file));
 			int read;
@@ -416,13 +426,13 @@ public class ImdbFetcherDialog extends Dialog {
 			}
 			is.close();
 			os.close();
-			
+
 			openFileWithDefaultApplication(file);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * @param urlstr
 	 */
@@ -434,7 +444,7 @@ public class ImdbFetcherDialog extends Dialog {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void actionSaveInfo() {
 		try {
 			File file = new File(new File(model.getParent().getBasePath(), model.getPathname()), model.getPathname() + ".nfo");

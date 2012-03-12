@@ -40,16 +40,21 @@ import org.python.util.PythonInterpreter;
 
 import de.bitkings.model.ImdbMovieInfo;
 
-public class ImdbContext {
-	
+public class ImdbContext implements MovieDatabaseSearchProvider {
+
 	private static final String NL = System.getProperty("line.separator");
-	
+
 	private PythonInterpreter interpreter;
 
-	/**
-	 * @param id
-	 * @return
+	@Override
+	public String getName() {
+		return "IMDBpy (slow)";
+	}
+
+	/* (non-Javadoc)
+	 * @see de.bitkings.MovieDatabaseSearchProvider#getMovieById(java.lang.String)
 	 */
+	@Override
 	public String getMovieById(String id) {
 		interpreter = getPythonInterpreter();
 		interpreter.exec("import sys");
@@ -72,16 +77,16 @@ public class ImdbContext {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	/**
-	 * @param moviename
-	 * @return
+
+	/* (non-Javadoc)
+	 * @see de.bitkings.MovieDatabaseSearchProvider#searchMovie(java.lang.String)
 	 */
+	@Override
 	public List<ImdbMovieInfo> searchMovie(String moviename) {
 		interpreter = getPythonInterpreter();
-		
+
 		List<ImdbMovieInfo> movlist = new ArrayList<ImdbMovieInfo>();
-		
+
 		interpreter.exec("import sys");
 		interpreter.exec("sys.argv = [sys.argv[0], "+PyString.encode_UnicodeEscape(moviename, true)+"]");
 		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("search_movie.py")) {
