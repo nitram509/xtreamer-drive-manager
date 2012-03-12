@@ -1,3 +1,29 @@
+/*
+ * Copyright (c) 2012, Martin W. Kirst
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * o Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ * o Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package de.bitkings;
 
 import java.awt.Desktop;
@@ -40,20 +66,20 @@ import de.bitkings.utils.ImageUtils;
 public class ManageDrives {
 
 	private static final String PREF_BASE_FOLDER = "base.folder";
-	
+
 	protected Shell shell;
-	
+
 	private final Preferences preferences = Preferences.userNodeForPackage(this.getClass());
-	
+
 	private final BaseFolder model = new BaseFolder();
-	
+
 	private Text txt_chooseFolder;
 	private Button btn_refresh;
 	private Table tab_folders;
 	private SashForm sash_folders_files;
 	private Table tab_details;
 	private Button btn_Imdb;
-	
+
 
 	/**
 	 * Launch the application.
@@ -110,19 +136,20 @@ public class ManageDrives {
 		shell.setText("Xtreamer Drive Manager");
 		shell.setLayout(new FillLayout(SWT.HORIZONTAL));
 		shell.setImage(SWTResourceManager.getImage(ManageDrives.class, "/xtreamer.png"));
-		
+
 		Composite composite = new Composite(shell, SWT.NONE);
 		composite.setLayout(new GridLayout(1, false));
-		
+
 		final Composite composite_basefolder = new Composite(composite, SWT.NONE);
 		composite_basefolder.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 		composite_basefolder.setLayout(new GridLayout(4, false));
-		
+
 		Label lbl_folder = new Label(composite_basefolder, SWT.NONE);
 		lbl_folder.setText("Folder:");
-		
+
 		txt_chooseFolder = new Text(composite_basefolder, SWT.BORDER);
 		txt_chooseFolder.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				File f = new File(txt_chooseFolder.getText());
 				boolean isok = f.exists() && f.isDirectory();
@@ -130,7 +157,7 @@ public class ManageDrives {
 			}
 		});
 		txt_chooseFolder.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
+
 		Button btn_choosFolder = new Button(composite_basefolder, SWT.NONE);
 		btn_choosFolder.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -140,7 +167,7 @@ public class ManageDrives {
 		});
 		btn_choosFolder.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		btn_choosFolder.setImage(SWTResourceManager.getImage(ManageDrives.class, "/folder.png"));
-		
+
 		btn_refresh = new Button(composite_basefolder, SWT.NONE);
 		btn_refresh.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -152,7 +179,7 @@ public class ManageDrives {
 
 		sash_folders_files = new SashForm(composite, SWT.NONE);
 		sash_folders_files.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		
+
 		tab_folders = new Table(sash_folders_files, SWT.BORDER | SWT.FULL_SELECTION);
 		tab_folders.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -176,7 +203,7 @@ public class ManageDrives {
 		});
 		tab_folders.setHeaderVisible(true);
 		tab_folders.setLinesVisible(true);
-		
+
 		final FoldersSortListener foldersSortListener = new FoldersSortListener();
 		{
 			TableColumn column = new TableColumn(tab_folders, SWT.LEFT);
@@ -198,18 +225,18 @@ public class ManageDrives {
 			column.setWidth(25);
 			column.addListener(SWT.Selection, foldersSortListener);
 		}
-		
+
 		Composite composite_action_details = new Composite(sash_folders_files, SWT.NONE);
 		GridLayout gl_composite_action_details = new GridLayout(1, false);
 		gl_composite_action_details.marginWidth = 0;
 		gl_composite_action_details.marginHeight = 0;
 		composite_action_details.setLayout(gl_composite_action_details);
 		sash_folders_files.setWeights(new int[] {1, 1});
-		
+
 		Composite composite_actionbuttons = new Composite(composite_action_details, SWT.NONE);
 		composite_actionbuttons.setBounds(0, 0, 64, 64);
 		composite_actionbuttons.setLayout(new FillLayout(SWT.HORIZONTAL));
-		
+
 		btn_Imdb = new Button(composite_actionbuttons, SWT.NONE);
 		btn_Imdb.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -221,7 +248,7 @@ public class ManageDrives {
 		btn_Imdb.setText("IMDB");
 		btn_Imdb.setImage(SWTResourceManager.getImage(ManageDrives.class, "/imdb.png"));
 		btn_Imdb.setEnabled(false);
-		
+
 		tab_details = new Table(composite_action_details, SWT.BORDER | SWT.FULL_SELECTION);
 		tab_details.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		tab_details.addSelectionListener(new SelectionAdapter() {
@@ -257,14 +284,14 @@ public class ManageDrives {
 			column.setWidth(200);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void fillData() {
 		txt_chooseFolder.setText(model.getBasePath());
 	}
-	
+
 	private void actionChooseFolder() {
 		DirectoryDialog dialog = new DirectoryDialog (shell);
 		File f = new File(txt_chooseFolder.getText());
@@ -290,9 +317,9 @@ public class ManageDrives {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void actionRefreshModel() {
 		model.setBasePath(txt_chooseFolder.getText());
@@ -316,17 +343,17 @@ public class ManageDrives {
 			}
 		}
 	}
-	
+
 	/**
 	 * @param movieFolder
 	 */
-	private void loadDetailsFromImdb(MovieFolder movieFolder) { 
+	private void loadDetailsFromImdb(MovieFolder movieFolder) {
 		if (movieFolder == null) return;
 		ImdbFetcherDialog dlg = new ImdbFetcherDialog(this.shell, SWT.NONE);
 		dlg.setModel(movieFolder);
 		dlg.open();
 	}
-	
+
 	/**
 	 * @param movieFolder
 	 */
@@ -356,11 +383,12 @@ public class ManageDrives {
 			}
 		}
 	}
-	
+
 	private final class FoldersSortListener implements Listener {
+		@Override
 		public void handleEvent(Event e) {
 			//FIXME: not yet supported
-			
+
 //				// determine new sort column and direction
 //				TableColumn sortColumn = tab_folders.getSortColumn();
 //				TableColumn currentColumn = (TableColumn) e.widget;
@@ -374,7 +402,7 @@ public class ManageDrives {
 //				// sort the data based on column and direction
 //				final int index = tab_folders.getC
 //				final int direction = dir;
-//				
+//
 //				Collections.sort(model.getMovies(), MovieFolder.getComparatorByName());
 //				// update data displayed in table
 //				tab_folders.setSortDirection(dir);
