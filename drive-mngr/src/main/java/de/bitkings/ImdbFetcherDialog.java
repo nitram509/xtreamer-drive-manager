@@ -85,7 +85,7 @@ public class ImdbFetcherDialog extends Dialog {
    */
   public ImdbFetcherDialog(Shell parent, int style) {
     super(parent, style);
-    setText("Run IMDB Scripts");
+    setText("Get information from themoviedb.org");
   }
 
   public void setModel(MovieFolder model) {

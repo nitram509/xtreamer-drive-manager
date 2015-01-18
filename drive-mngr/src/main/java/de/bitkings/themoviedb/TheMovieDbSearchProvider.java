@@ -55,7 +55,7 @@ public class TheMovieDbSearchProvider implements MovieDatabaseSearchProvider {
       movieDetails.setYear(movie.getReleaseDate());
       movieDetails.setCountry(asStringList(movie.getProductionCountries().stream().map(ProductionCountry::getName).collect(toList())));
       MovieDb infoImdb = tmdb.getMovieInfoImdb(id, LANGUAGE);
-      movieDetails.setImdb("http://www.imdb.com/title/" + infoImdb.getImdbID() + "/");
+      movieDetails.setImdbUrl("http://www.imdb.com/title/" + infoImdb.getImdbID() + "/");
       movieDetails.setOverview(movie.getOverview());
       movieDetails.setPosterUrl(tmdb.getConfiguration().getBaseUrl() + "/original" + movie.getPosterPath());
       return movieDetails;

@@ -13,7 +13,7 @@ public class MovieDetails {
   private String cast;
   private String year;
   private String country;
-  private String imdb;
+  private String imdbUrl;
   private String overview;
   private String posterUrl;
 
@@ -32,7 +32,7 @@ public class MovieDetails {
     if (cast != null) sb.append("Cast: ").append(cast).append(NEW_LINE);
     if (year != null) sb.append("Year: ").append(year).append(NEW_LINE);
     if (country != null) sb.append("Country: ").append(country).append(NEW_LINE);
-    if (imdb != null) sb.append(PREFIX_IMDB_URL).append(imdb).append(NEW_LINE);
+    if (imdbUrl != null) sb.append(PREFIX_IMDB_URL).append(imdbUrl).append(NEW_LINE);
     if (posterUrl != null) sb.append(PREFIX_POSTER_URL).append(posterUrl).append(NEW_LINE);
     if (overview != null) sb.append("Description: ").append(overview).append(NEW_LINE);
     return sb.toString();
@@ -70,12 +70,12 @@ public class MovieDetails {
     return country;
   }
 
-  public void setImdb(String imdb) {
-    this.imdb = imdb;
+  public void setImdbUrl(String imdbUrl) {
+    this.imdbUrl = imdbUrl;
   }
 
-  public String getImdb() {
-    return imdb;
+  public String getImdbUrl() {
+    return imdbUrl;
   }
 
   public void setOverview(String description) {
