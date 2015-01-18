@@ -22,3 +22,8 @@ or via Java system property:
 
 ````java -DAPI_KEY=ab123456789012345678901234567890cd de.bitkings.ManageDrives````
 
+## Screenshots
+
+![The main window](/screenshots/empty_main_window.png?raw=true)
+
+![Downloading movie information](/screenshots/download_info_from_themoviedb.png?raw=true)
