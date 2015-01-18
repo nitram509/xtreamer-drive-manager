@@ -76,7 +76,7 @@ public class TheMovieDbSearchProvider implements MovieDatabaseSearchProvider {
   @Override
   public List<MovieInfo> searchMovie(String moviename) {
     try {
-      TmdbResultsList<MovieDb> movieDbTmdbResultsList = tmdb.searchMovie(moviename, 0, null, false, 0);
+      TmdbResultsList<MovieDb> movieDbTmdbResultsList = tmdb.searchMovie(moviename, 0, LANGUAGE, false, 0);
       return movieDbTmdbResultsList.getResults().stream()
           .map(movieDb -> {
                 String id = "" + movieDb.getId();
