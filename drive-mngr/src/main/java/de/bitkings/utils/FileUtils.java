@@ -26,10 +26,10 @@
 
 package de.bitkings.utils;
 
+import net.infotrek.util.WindowsRegistry;
+
 import java.io.File;
 import java.util.prefs.BackingStoreException;
-
-import net.infotrek.util.WindowsRegistry;
 
 public class FileUtils {
 

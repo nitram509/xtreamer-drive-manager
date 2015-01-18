@@ -1,8 +1,8 @@
 package de.bitkings;
 
-import java.util.List;
-
 import de.bitkings.model.ImdbMovieInfo;
+
+import java.util.List;
 
 public interface MovieDatabaseSearchProvider {
 

@@ -26,18 +26,13 @@
 
 package de.bitkings;
 
-import java.awt.Desktop;
-import java.io.File;
-import java.util.prefs.Preferences;
-
+import de.bitkings.model.BaseFolder;
+import de.bitkings.model.MovieFolder;
+import de.bitkings.utils.FileUtils;
+import de.bitkings.utils.ImageUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
@@ -46,22 +41,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import de.bitkings.model.BaseFolder;
-import de.bitkings.model.MovieFolder;
-import de.bitkings.utils.FileUtils;
-import de.bitkings.utils.ImageUtils;
+import java.awt.*;
+import java.io.File;
+import java.util.prefs.Preferences;
 
 public class ManageDrives {
 

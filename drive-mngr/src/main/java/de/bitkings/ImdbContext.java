@@ -26,19 +26,18 @@
 
 package de.bitkings;
 
+import de.bitkings.model.ImdbMovieInfo;
+import org.python.core.PyObject;
+import org.python.core.PyString;
+import org.python.core.PySystemState;
+import org.python.util.PythonInterpreter;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.python.core.PyObject;
-import org.python.core.PyString;
-import org.python.core.PySystemState;
-import org.python.util.PythonInterpreter;
-
-import de.bitkings.model.ImdbMovieInfo;
 
 public class ImdbContext implements MovieDatabaseSearchProvider {
 

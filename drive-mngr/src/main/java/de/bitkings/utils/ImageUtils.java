@@ -26,10 +26,9 @@
 
 package de.bitkings.utils;
 
+import de.bitkings.ManageDrives;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.SWTResourceManager;
-
-import de.bitkings.ManageDrives;
 
 public class ImageUtils {
 
