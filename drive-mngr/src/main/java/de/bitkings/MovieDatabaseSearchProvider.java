@@ -1,6 +1,7 @@
 package de.bitkings;
 
-import de.bitkings.model.ImdbMovieInfo;
+import de.bitkings.model.MovieDetails;
+import de.bitkings.model.MovieInfo;
 
 import java.util.List;
 
@@ -15,12 +16,12 @@ public interface MovieDatabaseSearchProvider {
 	 * @param id
 	 * @return
 	 */
-	public abstract String getMovieById(String id);
+	public abstract MovieDetails getMovieById(String id);
 
 	/**
 	 * @param moviename
 	 * @return
 	 */
-	public abstract List<ImdbMovieInfo> searchMovie(String moviename);
+	public abstract List<MovieInfo> searchMovie(String moviename);
 
 }

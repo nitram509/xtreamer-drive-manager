@@ -24,36 +24,24 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package jython;
+package de.bitkings.model;
 
-import java.io.File;
-import java.io.InputStream;
+public class MovieInfo {
 
-import org.python.core.PyObject;
-import org.python.core.PySystemState;
-import org.python.util.PythonInterpreter;
-
-public class TestRunSearchMovie {
-
-	public static void main(String[] args) {
-		TestRunSearchMovie pgm = new TestRunSearchMovie();
-		try {
-			pgm.run();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public String id;
+	public String title;
+	public String year;
+	
+	/**
+	 * @param id
+	 * @param title
+	 * @param year
+	 */
+	public MovieInfo(String id, String title, String year) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.year = year;
 	}
-
-	private void run() throws Exception {
-		System.setProperty(PySystemState.PYTHON_CACHEDIR, new File(System.getProperty("java.io.tmpdir"), "jythoncachedir").toString());
-		PythonInterpreter interp = new PythonInterpreter();
-		interp.exec("import sys");
-		interp.exec("sys.argv = [sys.argv[0], 'gritters']");
-		InputStream is = this.getClass().getClassLoader().getResourceAsStream("search_movie.py");
-		interp.execfile(is);
-		PyObject pyobj = interp.get("results");
-		System.out.println(pyobj);
-		is.close();
-	}
-
+	
 }

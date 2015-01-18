@@ -232,8 +232,8 @@ public class ManageDrives {
 				loadDetailsFromImdb(mf);
 			}
 		});
-		btn_Imdb.setText("IMDB");
-		btn_Imdb.setImage(SWTResourceManager.getImage(ManageDrives.class, "/imdb.png"));
+		btn_Imdb.setText("themoviedb.org");
+		btn_Imdb.setImage(SWTResourceManager.getImage(ManageDrives.class, "/themoviedb24x16.png"));
 		btn_Imdb.setEnabled(false);
 
 		tab_details = new Table(composite_action_details, SWT.BORDER | SWT.FULL_SELECTION);
